@@ -1,0 +1,85 @@
+function init(self)
+	-- Add initialization code here
+	-- Remove this function if not needed
+	self.slide_red = false
+	self.slide_blue = false
+	self.block_height = 2052
+	self.window_height = 720
+	go.set_position(vmath.vector3(0,self.window_height+1, 0), "blue")
+	msg.post(".", "start_slide", {block = "red"})
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Remove this function if not needed
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Remove this function if not needed
+
+	-- get block positions
+	local red_pos = go.get_position("red")
+	local red_pos_y = math.floor(red_pos.y)
+	local top = math.floor(self.window_height - self.block_height)
+	print("Update: red_pos_y = " .. red_pos_y .. " / " .. top)
+	local blue_pos = go.get_position("blue")
+	local blue_pos_y = math.floor(blue_pos.y)
+	local bottom = math.floor(self.window_height - self.block_height)
+	print("Update: blue_pos_y = " .. blue_pos_y .. " / " .. top)
+	
+	if red_pos_y <= top then
+		msg.post(".", "start_slide", {block = "blue"})
+	elseif blue_pos_y <= top then
+		msg.post(".", "start_slide", {block = "red"})
+	end
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Remove this function if not needed
+	if message_id == hash("start_slide") then
+		start_slide(self, message.block)
+	end
+end
+
+function on_input(self, action_id, action)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Remove this function if not needed
+end
+
+function start_slide(self, block)
+	print("start_slide: block = " .. block)
+	local easing = nil
+
+	-- if initial slide move red block
+	if not self.slide_red and not self.slide_blue then
+		self.stop_at = -self.block_height
+	else
+		self.stop_at = self.window_height - self.block_height
+	end
+
+	if block == "red" then
+		self.slide_red = true
+	elseif block == "blue" then
+		self.slide_blue = true
+	end
+	
+	go.animate(block, "position.y", go.PLAYBACK_ONCE_FORWARD, self.stop_at, go.EASING_LINEAR, 10, 0, stop_slide)
+end
+
+function stop_slide(self, url, property)
+	print("stop_slide: " .. url)
+	local block = ""
+	if url == "[main:/red]" then
+		self.slide_red = false
+	elseif url == "[main:/blue]" then
+		self.slide_blue = false
+	end
+	go.set_position(vmath.vector3(0, self.window_height+1, 0), url)
+end

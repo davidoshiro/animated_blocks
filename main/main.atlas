@@ -1,0 +1,9 @@
+images {
+  image: "/assets/images/blue_block.png"
+}
+images {
+  image: "/assets/images/red_block.png"
+}
+margin: 0
+extrude_borders: 0
+inner_padding: 0
