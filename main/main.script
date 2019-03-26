@@ -55,8 +55,8 @@ end
 
 function start_slide(self, block)
 	print("start_slide: block = " .. block)
-	local easing = nil
-
+	local duration = 0
+	
 	-- if initial slide move red block
 	if not self.slide_red and not self.slide_blue then
 		self.stop_at = -self.block_height
@@ -69,8 +69,9 @@ function start_slide(self, block)
 	elseif block == "blue" then
 		self.slide_blue = true
 	end
+	duration = math.abs(go.get_position(block).y - self.stop_at) / 100
 	
-	go.animate(block, "position.y", go.PLAYBACK_ONCE_FORWARD, self.stop_at, go.EASING_LINEAR, 10, 0, stop_slide)
+	go.animate(block, "position.y", go.PLAYBACK_ONCE_FORWARD, self.stop_at, go.EASING_LINEAR, duration, 0, stop_slide)
 end
 
 function stop_slide(self, url, property)
